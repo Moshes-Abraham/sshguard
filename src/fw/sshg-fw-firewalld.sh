@@ -22,7 +22,7 @@ fw_block() {
     else
         blocklist6="$blocklist6 --add-entry=$1/$3"
     fi
-    if [[ $SECONDS -ge $window ]]; then
+    if [[ $(( $SECONDS - $lastblock )) -ge $window ]]; then
         if [[ "$blocklist" ]]; then
             ${FIREW_CMD} --ipset="sshguard4" $blocklist
             blocklist=''
@@ -31,7 +31,7 @@ fw_block() {
             ${FIREW_CMD} --ipset="sshguard6" $blocklist6
             blocklist6=''
         fi
-        SECONDS=0
+        lastblock=$SECONDS
     fi
 }
 
@@ -41,7 +41,7 @@ fw_release() {
     else
         releaselist6="$releaselist6 --add-entry=$1/$3"
     fi
-    if [[ $SECONDS -ge $window ]]; then
+    if [[ $(( $SECONDS - $lastrelease )) -ge $window ]]; then
         if [[ "$releaselist" ]]; then
             ${FIREW_CMD} --ipset="sshguard4" $releaselist
             releaselist=''
@@ -50,7 +50,7 @@ fw_release() {
             ${FIREW_CMD} --ipset="sshguard6" $releaselist6
             releaselist6=''
         fi
-        SECONDS=0
+        lastrelease=$SECONDS
     fi
 }
 

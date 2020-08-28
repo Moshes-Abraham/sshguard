@@ -42,7 +42,7 @@ fw_block() {
     else
         blocklist6="$blocklist6, $1/$3"
     fi
-    if [[ $SECONDS -ge $window ]]; then
+    if [[ $(( $SECONDS - $lastblock )) -ge $window ]]; then
         if [[ "$blocklist" ]]; then
             blocklist=${blocklist:2}
             run_nft "add element" "${NFT_SET} { $blocklist }" 4
@@ -53,7 +53,7 @@ fw_block() {
             run_nft "add element" "${NFT_SET} { $blocklist6 }" 6
             blocklist6=''
         fi
-        SECONDS=0
+        lastblock=$SECONDS
     fi
 }
 
@@ -63,7 +63,7 @@ fw_release() {
     else
         releaselist6="$releaselist6, $1/$3"
     fi
-    if [[ $SECONDS -ge $window ]]; then
+    if [[ $(( $SECONDS - $lastrelease )) -ge $window ]]; then
         if [[ "$releaselist" ]]; then
             releaselist=${releaselist:2}
             run_nft "delete element" "${NFT_SET} { $releaselist }" 4
@@ -74,7 +74,7 @@ fw_release() {
             run_nft "delete element" "${NFT_SET} { $releaselist6 }" 6
             releaselist6=''
         fi
-        SECONDS=0
+        lastrelease=$SECONDS
     fi
 }
 

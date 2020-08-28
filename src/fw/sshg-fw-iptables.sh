@@ -26,7 +26,7 @@ fw_block() {
     else
         blocklist6="$blocklist6,$1/$3"
     fi
-    if [[ $SECONDS -ge $window ]]; then
+    if [[ $(( $SECONDS - $lastblock )) -ge $window ]]; then
         if [[ "$blocklist" ]]; then
             blocklist=${blocklist:1}
             run_iptables "-I sshguard -s $blocklist -j DROP" 4
@@ -37,7 +37,7 @@ fw_block() {
             run_iptables "-I sshguard -s $blocklist6 -j DROP" 6
             blocklist6=''
         fi
-        SECONDS=0
+        lastblock=$SECONDS
     fi
 }
 
@@ -47,7 +47,7 @@ fw_release() {
     else
         releaselist6="$releaselist6,$1/$3"
     fi
-    if [[ $SECONDS -ge $window ]]; then
+    if [[ $(( $SECONDS - $lastrelease )) -ge $window ]]; then
         if [[ "$releaselist" ]]; then
             releaselist=${releaselist:1}
             run_iptables "-D sshguard -s $releaselist -j DROP" 4
@@ -58,7 +58,7 @@ fw_release() {
             run_iptables "-D sshguard -s $releaselist6 -j DROP" 6
             releaselist6=''
         fi
-        SECONDS=0
+        lastrelease=$SECONDS
     fi
 }
 
