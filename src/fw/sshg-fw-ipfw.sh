@@ -11,11 +11,23 @@ fw_init() {
 }
 
 fw_block() {
-    ipfw -q table ${IPFW_TABLE} add $1/$3
+    blocklist="$blocklist, $1/$3"
+    if [[ $SECONDS -ge $window ]]; then
+        blocklist=${blocklist:2}
+        ipfw -q table ${IPFW_TABLE} add $blocklist
+        blocklist=''
+        SECONDS=0
+    fi
 }
 
 fw_release() {
-    ipfw -q table ${IPFW_TABLE} delete $1/$3
+    releaselist="$releaselist, $1/$3"
+    if [[ $SECONDS -ge $window ]]; then
+        releaselist=${releaselist:2}
+        ipfw -q table ${IPFW_TABLE} delete $releaselist
+        releaselist=''
+        SECONDS=0
+    fi
 }
 
 fw_flush() {
