@@ -17,11 +17,41 @@ fw_init() {
 }
 
 fw_block() {
-    ${FIREW_CMD} --ipset="sshguard$2" --add-entry="$1/$3"
+    if [[ $2 -eq 4 ]]; then
+        blocklist="$blocklist --add-entry=$1/$3"
+    else
+        blocklist6="$blocklist6 --add-entry=$1/$3"
+    fi
+    if [[ $SECONDS -ge $window ]]; then
+        if [[ "$blocklist" ]]; then
+            ${FIREW_CMD} --ipset="sshguard4" $blocklist
+            blocklist=''
+        fi
+        if [[ "$blocklist6" ]]; then
+            ${FIREW_CMD} --ipset="sshguard6" $blocklist6
+            blocklist6=''
+        fi
+        SECONDS=0
+    fi
 }
 
 fw_release() {
-    ${FIREW_CMD} --ipset="sshguard$2" --remove-entry="$1/$3"
+    if [[ $2 -eq 4 ]]; then
+        releaselist="$releaselist --add-entry=$1/$3"
+    else
+        releaselist6="$releaselist6 --add-entry=$1/$3"
+    fi
+    if [[ $SECONDS -ge $window ]]; then
+        if [[ "$releaselist" ]]; then
+            ${FIREW_CMD} --ipset="sshguard4" $releaselist
+            releaselist=''
+        fi
+        if [[ "$releaselist6" ]]; then
+            ${FIREW_CMD} --ipset="sshguard6" $releaselist6
+            releaselist6=''
+        fi
+        SECONDS=0
+    fi
 }
 
 fw_flush() {
