@@ -16,6 +16,20 @@ cleanup() {
 
 trap cleanup EXIT INT TERM
 
+# initialize variables
+# last time blocks/releases where send to backend
+lastblock=0
+lastrelease=0
+# list of block/release tasks to process
+blocklist=''
+blocklist6=''
+releaselist=''
+releaselist6=''
+# time window in which to group tasks, in seconds
+window=1
+# initialize T=0
+SECONDS=0
+
 while read -r cmd address addrtype cidr; do
     case $cmd in
         block)
