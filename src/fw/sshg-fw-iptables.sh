@@ -21,11 +21,45 @@ fw_init() {
 }
 
 fw_block() {
-    run_iptables "-I sshguard -s $1/$3 -j DROP" $2
+    if [[ $2 -eq 4 ]]; then
+        blocklist="$blocklist,$1/$3"
+    else
+        blocklist6="$blocklist6,$1/$3"
+    fi
+    if [[ $SECONDS -ge $window ]]; then
+        if [[ "$blocklist" ]]; then
+            blocklist=${blocklist:1}
+            run_iptables "-I sshguard -s $blocklist -j DROP" 4
+            blocklist=''
+        fi
+        if [[ "$blocklist6" ]]; then
+            blocklist6=${blocklist6:1}
+            run_iptables "-I sshguard -s $blocklist6 -j DROP" 6
+            blocklist6=''
+        fi
+        SECONDS=0
+    fi
 }
 
 fw_release() {
-    run_iptables "-D sshguard -s $1/$3 -j DROP" $2
+    if [[ $2 -eq 4 ]]; then
+        releaselist="$releaselist,$1/$3"
+    else
+        releaselist6="$releaselist6,$1/$3"
+    fi
+    if [[ $SECONDS -ge $window ]]; then
+        if [[ "$releaselist" ]]; then
+            releaselist=${releaselist:1}
+            run_iptables "-D sshguard -s $releaselist -j DROP" 4
+            releaselist=''
+        fi
+        if [[ "$releaselist6" ]]; then
+            releaselist6=${releaselist6:1}
+            run_iptables "-D sshguard -s $releaselist6 -j DROP" 6
+            releaselist6=''
+        fi
+        SECONDS=0
+    fi
 }
 
 fw_flush() {
