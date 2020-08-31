@@ -37,11 +37,45 @@ fw_init() {
 }
 
 fw_block() {
-    run_nft "add element" "${NFT_SET} { $1/$3 }" $2
+    if [[ $2 -eq 4 ]]; then
+        blocklist="$blocklist, $1/$3"
+    else
+        blocklist6="$blocklist6, $1/$3"
+    fi
+    if [[ $SECONDS -ge $window ]]; then
+        if [[ "$blocklist" ]]; then
+            blocklist=${blocklist:2}
+            run_nft "add element" "${NFT_SET} { $blocklist }" 4
+            blocklist=''
+        fi
+        if [[ "$blocklist6" ]]; then
+            blocklist6=${blocklist6:2}
+            run_nft "add element" "${NFT_SET} { $blocklist6 }" 6
+            blocklist6=''
+        fi
+        SECONDS=0
+    fi
 }
 
 fw_release() {
-    run_nft "delete element" "${NFT_SET} { $1/$3 }" $2
+    if [[ $2 -eq 4 ]]; then
+        releaselist="$releaselist, $1/$3"
+    else
+        releaselist6="$releaselist6, $1/$3"
+    fi
+    if [[ $SECONDS -ge $window ]]; then
+        if [[ "$releaselist" ]]; then
+            releaselist=${releaselist:2}
+            run_nft "delete element" "${NFT_SET} { $releaselist }" 4
+            releaselist=''
+        fi
+        if [[ "$releaselist6" ]]; then
+            releaselist6=${releaselist6:2}
+            run_nft "delete element" "${NFT_SET} { $releaselist6 }" 6
+            releaselist6=''
+        fi
+        SECONDS=0
+    fi
 }
 
 fw_flush() {
