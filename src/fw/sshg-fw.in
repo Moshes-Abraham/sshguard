@@ -28,6 +28,7 @@ releaselist6=''
 # time window in which to group tasks, in seconds
 window=1
 
+# batch mode uses bash SECONDS buildin, don't enable in other shells
 if [ $BASH_VERSION ]; then
     batch_enabled=YES
 fi

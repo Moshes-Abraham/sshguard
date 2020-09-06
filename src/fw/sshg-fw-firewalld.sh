@@ -17,11 +17,13 @@ fw_init() {
 }
 
 fw_block() {
+    # collect IPs in blocklist
     if [ $2 -eq 4 ]; then
         blocklist="$blocklist --add-entry=$1/$3"
     else
         blocklist6="$blocklist6 --add-entry=$1/$3"
     fi
+    # flush blocklist to backend if batch mode is not enabled or $window seconds have elapsed
     if [ ! $batch_enabled ] || [ $(( $SECONDS - $lastblock )) -ge $window ]; then
         if [ "$blocklist" ]; then
             ${FIREW_CMD} --ipset="sshguard4" $blocklist
@@ -36,11 +38,13 @@ fw_block() {
 }
 
 fw_release() {
+    # collect IPs in releaselist
     if [ $2 -eq 4 ]; then
         releaselist="$releaselist --add-entry=$1/$3"
     else
         releaselist6="$releaselist6 --add-entry=$1/$3"
     fi
+    # flush releaselist to backend if batch mode is not enabled or $window seconds have elapsed
     if [ ! $batch_enabled ] || [ $(( $SECONDS - $lastrelease )) -ge $window ]; then
         if [ "$releaselist" ]; then
             ${FIREW_CMD} --ipset="sshguard4" $releaselist
