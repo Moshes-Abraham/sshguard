@@ -17,7 +17,7 @@ cleanup() {
 trap cleanup EXIT INT TERM
 
 # initialize variables
-# last time blocks/releases where send to backend
+# last time blocks/releases were send to backend, in seconds
 lastblock=0
 lastrelease=0
 # list of block/release tasks to process
@@ -27,8 +27,10 @@ releaselist=''
 releaselist6=''
 # time window in which to group tasks, in seconds
 window=1
-# initialize T=0
-SECONDS=0
+
+if [ $BASH_VERSION ]; then
+    batch_enabled=YES
+fi
 
 while read -r cmd address addrtype cidr; do
     case $cmd in

@@ -12,7 +12,7 @@ fw_init() {
 
 fw_block() {
     blocklist="$blocklist, $1/$3"
-    if [[ $(( $SECONDS - $lastblock )) -ge $window ]]; then
+    if [ ! $batch_enabled ] || [ $(( $SECONDS - $lastblock )) -ge $window ]; then
         blocklist=${blocklist:2}
         ipfw -q table ${IPFW_TABLE} add $blocklist
         blocklist=''
@@ -22,7 +22,7 @@ fw_block() {
 
 fw_release() {
     releaselist="$releaselist, $1/$3"
-    if [[ $(( $SECONDS - $lastrelease )) -ge $window ]]; then
+    if [ ! $batch_enabled ] || [ $(( $SECONDS - $lastrelease )) -ge $window ]; then
         releaselist=${releaselist:2}
         ipfw -q table ${IPFW_TABLE} delete $releaselist
         releaselist=''
