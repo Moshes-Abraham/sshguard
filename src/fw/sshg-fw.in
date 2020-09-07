@@ -16,21 +16,25 @@ cleanup() {
 
 trap cleanup EXIT INT TERM
 
-# initialize variables
-# last time blocks/releases were send to backend, in seconds
-lastblock=0
-lastrelease=0
-# list of block/release tasks to process
-blocklist=''
-blocklist6=''
-releaselist=''
-releaselist6=''
-# time window in which to group tasks, in seconds
-window=1
-
 # batch mode uses bash SECONDS buildin, don't enable in other shells
-if [ $BASH_VERSION ]; then
+if [ -n "$BASH_VERSION" ]; then
     batch_enabled=YES
+fi
+
+# Initialize variables for batch processing
+if [ -n "$batch_enabled" ]; then
+    # last time blocks/releases were send to backend, in seconds
+    lastblock=0
+    lastrelease=0
+
+    # space-separated list of addresses to block/release
+    blocklist=''
+    blocklist6=''
+    releaselist=''
+    releaselist6=''
+
+    # time window in which to group tasks, in seconds
+    window=1
 fi
 
 while read -r cmd address addrtype cidr; do
