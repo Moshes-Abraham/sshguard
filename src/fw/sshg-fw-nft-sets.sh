@@ -39,19 +39,19 @@ fw_init() {
 fw_block() {
     # collect IPs in blocklist
     if [ $2 -eq 4 ]; then
-        blocklist="$blocklist, $1/$3"
+        blocklist="$blocklist,$1/$3"
     else
-        blocklist6="$blocklist6, $1/$3"
+        blocklist6="$blocklist6,$1/$3"
     fi
     # flush blocklist to backend if batch mode is not enabled or $window seconds have elapsed
     if [ ! $batch_enabled ] || [ $(( $SECONDS - $lastblock )) -ge $window ]; then
         if [ "$blocklist" ]; then
-            blocklist=${blocklist:2}
+            blocklist=${blocklist#,}
             run_nft "add element" "${NFT_SET} { $blocklist }" 4
             blocklist=''
         fi
         if [ "$blocklist6" ]; then
-            blocklist6=${blocklist6:2}
+            blocklist6=${blocklist6#,}
             run_nft "add element" "${NFT_SET} { $blocklist6 }" 6
             blocklist6=''
         fi
@@ -62,19 +62,19 @@ fw_block() {
 fw_release() {
     # collect IPs in releaselist
     if [ $2 -eq 4 ]; then
-        releaselist="$releaselist, $1/$3"
+        releaselist="$releaselist,$1/$3"
     else
-        releaselist6="$releaselist6, $1/$3"
+        releaselist6="$releaselist6,$1/$3"
     fi
     # flush releaselist to backend if batch mode is not enabled or $window seconds have elapsed
     if [ ! $batch_enabled ] || [ $(( $SECONDS - $lastrelease )) -ge $window ]; then
         if [ "$releaselist" ]; then
-            releaselist=${releaselist:2}
+            releaselist=${releaselist#,}
             run_nft "delete element" "${NFT_SET} { $releaselist }" 4
             releaselist=''
         fi
         if [ "$releaselist6" ]; then
-            releaselist6=${releaselist6:2}
+            releaselist6=${releaselist6#,}
             run_nft "delete element" "${NFT_SET} { $releaselist6 }" 6
             releaselist6=''
         fi

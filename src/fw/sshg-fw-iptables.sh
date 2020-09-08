@@ -30,12 +30,12 @@ fw_block() {
     # flush blocklist to backend if batch mode is not enabled or $window seconds have elapsed
     if [ ! $batch_enabled ] || [ $(( $SECONDS - $lastblock )) -ge $window ]; then
         if [ "$blocklist" ]; then
-            blocklist=${blocklist:1}
+            blocklist=${blocklist#,}
             run_iptables "-I sshguard -s $blocklist -j DROP" 4
             blocklist=''
         fi
         if [ "$blocklist6" ]; then
-            blocklist6=${blocklist6:1}
+            blocklist6=${blocklist6#,}
             run_iptables "-I sshguard -s $blocklist6 -j DROP" 6
             blocklist6=''
         fi
@@ -53,12 +53,12 @@ fw_release() {
     # flush releaselist to backend if batch mode is not enabled or $window seconds have elapsed
     if [ ! $batch_enabled ] || [ $(( $SECONDS - $lastrelease )) -ge $window ]; then
         if [ "$releaselist" ]; then
-            releaselist=${releaselist:1}
+            releaselist=${releaselist#,}
             run_iptables "-D sshguard -s $releaselist -j DROP" 4
             releaselist=''
         fi
         if [ "$releaselist6" ]; then
-            releaselist6=${releaselist6:1}
+            releaselist6=${releaselist6#,}
             run_iptables "-D sshguard -s $releaselist6 -j DROP" 6
             releaselist6=''
         fi

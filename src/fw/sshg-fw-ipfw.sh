@@ -12,10 +12,10 @@ fw_init() {
 
 fw_block() {
     # collect IPs in blocklist
-    blocklist="$blocklist, $1/$3"
+    blocklist="$blocklist,$1/$3"
     # flush blocklist to backend if batch mode is not enabled or $window seconds have elapsed
     if [ ! $batch_enabled ] || [ $(( $SECONDS - $lastblock )) -ge $window ]; then
-        blocklist=${blocklist:2}
+        blocklist=${blocklist#,}
         ipfw -q table ${IPFW_TABLE} add $blocklist
         blocklist=''
         lastblock=$SECONDS
@@ -24,10 +24,10 @@ fw_block() {
 
 fw_release() {
     # collect IPs in releaselist
-    releaselist="$releaselist, $1/$3"
+    releaselist="$releaselist,$1/$3"
     # flush blocklist to backend if batch mode is not enabled or $window seconds have elapsed
     if [ ! $batch_enabled ] || [ $(( $SECONDS - $lastrelease )) -ge $window ]; then
-        releaselist=${releaselist:2}
+        releaselist=${releaselist#,}
         ipfw -q table ${IPFW_TABLE} delete $releaselist
         releaselist=''
         lastrelease=$SECONDS
