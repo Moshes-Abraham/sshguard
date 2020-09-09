@@ -24,12 +24,12 @@ fw_block() {
         blocklist6="$blocklist6 --add-entry=$1/$3"
     fi
     # flush blocklist to backend if batch mode is not enabled or $window seconds have elapsed
-    if [ ! $batch_enabled ] || [ $(( $SECONDS - $lastblock )) -ge $window ]; then
-        if [ "$blocklist" ]; then
+    if [ -z "$batch_enabled" ] || [ $(( $SECONDS - $lastblock )) -ge $window ]; then
+        if [ -n "$blocklist" ]; then
             ${FIREW_CMD} --ipset="sshguard4" $blocklist
             blocklist=''
         fi
-        if [ "$blocklist6" ]; then
+        if [ -n "$blocklist6" ]; then
             ${FIREW_CMD} --ipset="sshguard6" $blocklist6
             blocklist6=''
         fi
@@ -45,12 +45,12 @@ fw_release() {
         releaselist6="$releaselist6 --add-entry=$1/$3"
     fi
     # flush releaselist to backend if batch mode is not enabled or $window seconds have elapsed
-    if [ ! $batch_enabled ] || [ $(( $SECONDS - $lastrelease )) -ge $window ]; then
-        if [ "$releaselist" ]; then
+    if [ -z "$batch_enabled" ] || [ $(( $SECONDS - $lastrelease )) -ge $window ]; then
+        if [ -n "$releaselist" ]; then
             ${FIREW_CMD} --ipset="sshguard4" $releaselist
             releaselist=''
         fi
-        if [ "$releaselist6" ]; then
+        if [ -n "$releaselist6" ]; then
             ${FIREW_CMD} --ipset="sshguard6" $releaselist6
             releaselist6=''
         fi
