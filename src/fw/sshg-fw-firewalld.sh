@@ -40,9 +40,9 @@ fw_block() {
 fw_release() {
     # collect IPs in releaselist
     if [ $2 -eq 4 ]; then
-        releaselist="$releaselist --add-entry=$1/$3"
+        releaselist="$releaselist --remove-entry=$1/$3"
     else
-        releaselist6="$releaselist6 --add-entry=$1/$3"
+        releaselist6="$releaselist6 --remove-entry=$1/$3"
     fi
     # flush releaselist to backend if batch mode is not enabled or $window seconds have elapsed
     if [ -z "$batch_enabled" ] || [ $(( $SECONDS - $lastrelease )) -ge $window ]; then
